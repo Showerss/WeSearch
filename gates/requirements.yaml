@@ -1,0 +1,50 @@
+# Promotion requirements, enforced by `scripts/lab promote`.
+# A claim moves up ONE rung at a time. Every required reviewer's latest verdict must be VERIFIED
+# on the claim's CURRENT packet (editing the claim, its assumptions or evidence makes reviews stale).
+# Any non-VERIFIED latest verdict on the current packet, from any role, blocks promotion.
+#
+# Keys per rung:
+#   reviewers:         roles that must have a fresh VERIFIED review
+#   needs_evidence:    claim must list evidence paths and they must all exist
+#   run_files:         every evidence path under research/runs/ must contain a match for each glob
+#   evidence_glob:     every pattern must match at least one file ({id} = claim id)
+#   evidence_any_glob: at least one pattern must match
+
+formal:
+  ladder: [idea, conjecture, sketch, derived, machine-checked]
+  solo_max: conjecture
+  requires:
+    conjecture: {}
+    sketch:
+      reviewers: [adversarial-reviewer]
+    derived:
+      reviewers: [proof-auditor, adversarial-reviewer]
+      evidence_any_glob: ["research/claims/{id}/proof*"]
+    machine-checked:
+      reviewers: [proof-auditor]
+      evidence_glob: ["research/claims/{id}/proofcheck.log"]
+      evidence_any_glob: ["research/claims/{id}/*.lean", "research/claims/{id}/*.v", "research/claims/{id}/*.thy", "research/claims/{id}/*.tla", "research/claims/{id}/*.smt2"]
+
+empirical:
+  ladder: [idea, observation, single-run, multi-seed, ablated, replicated]
+  solo_max: single-run
+  requires:
+    observation:
+      needs_evidence: true
+    single-run:
+      needs_evidence: true
+      run_files: ["command.txt", "seed*", "env*", "stdout.log"]
+    multi-seed:
+      needs_evidence: true
+      run_files: ["command.txt", "seed*", "env*", "stdout.log"]
+      reviewers: [stats-methods-reviewer]
+    ablated:
+      reviewers: [stats-methods-reviewer, adversarial-reviewer]
+    replicated:
+      reviewers: [replicator]
+
+# rigor: solo -> cannot pass solo_max
+# rigor: lean -> requirements above
+# rigor: full -> lean, plus adversarial-reviewer on every rung from index 2 up
+# Claims with novelty: true also need novelty-analyst from index 2 up (not in solo).
+novelty_reviewer: novelty-analyst

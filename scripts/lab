@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Wrapper so `scripts/lab ...` works. Uses ./.venv if present, else system python3.
+d="$(cd "$(dirname "$0")" && pwd)"
+py=python3
+[ -x "$d/../.venv/bin/python" ] && py="$d/../.venv/bin/python"
+exec "$py" "$d/lab.py" "$@"

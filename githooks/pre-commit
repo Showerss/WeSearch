@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Install: git config core.hooksPath githooks
+# Blocks commits that leave drafts with unsourced numbers or over-strong claims.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+rc=0
+for f in $(git diff --cached --name-only --diff-filter=AM -- 'research/drafts/*.md'); do
+  scripts/lab draft-check "$f" || rc=1
+done
+exit $rc

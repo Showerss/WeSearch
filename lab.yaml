@@ -1,0 +1,42 @@
+# Model-agnostic config. Any OpenAI-compatible chat endpoint works
+# (OpenAI, Anthropic via a compatible gateway, Azure, Ollama, vLLM, LiteLLM, ...).
+# Set the API key in the environment variable named by api_key_env. Never commit keys.
+
+tiers:
+  strong:
+    base_url: https://api.openai.com/v1
+    model: CHANGE_ME
+    api_key_env: LAB_STRONG_KEY
+  standard:
+    base_url: https://api.openai.com/v1
+    model: CHANGE_ME
+    api_key_env: LAB_STANDARD_KEY
+  # Put reviewers on a DIFFERENT vendor than builders to reduce shared blind spots.
+  reviewer:
+    base_url: https://api.openai.com/v1
+    model: CHANGE_ME
+    api_key_env: LAB_REVIEWER_KEY
+
+# role -> tier. Edit freely.
+roles:
+  guide: standard
+  pi: strong
+  integrity-officer: strong
+  literature-scout: standard
+  novelty-analyst: reviewer
+  data-experiment-engineer: standard
+  theory-specialist: strong
+  writer: standard
+  adversarial-reviewer: reviewer
+  proof-auditor: reviewer
+  stats-methods-reviewer: reviewer
+  replicator: reviewer
+
+# default rigor per claim: solo | lean | full
+rigor: lean
+
+# domain packs enabled for this project: empirical, theory, systems, pl
+packs: [empirical, theory]
+
+# Extra requests-per-run safety cap
+max_tokens: 4000

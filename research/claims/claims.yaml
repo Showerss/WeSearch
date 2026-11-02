@@ -1,0 +1,8 @@
+# Claims ledger. One entry per claim. Edit via `scripts/lab claim add`, raise via `lab promote`.
+# kind: formal | empirical
+# status ladders:
+#   formal:    idea, conjecture, sketch, derived, machine-checked
+#   empirical: idea, observation, single-run, multi-seed, ablated, replicated
+# evidence: file paths that exist on disk (proofs, run logs, scripts)
+# assumptions: ids from research/assumptions.yaml
+claims: []
