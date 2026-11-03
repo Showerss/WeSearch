@@ -1,0 +1,6 @@
+# Every assumption any claim depends on. If one changes, run `scripts/lab impact <id>`.
+# Example:
+# - id: A1
+#   text: "Data is i.i.d."
+#   status: unverified   # unverified | justified | checked
+assumptions: []
