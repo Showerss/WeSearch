@@ -43,7 +43,7 @@ sequenceDiagram
   PI->>PD: decision memo + charter item
   PD->>PD: create plan and explicit handoff packet
   PD->>LS: lab run --handoff packet.yaml --out research/literature/topic.md
-  Note over LS: Receives shared LAB.md, role prompt, and only packet-listed source files; no prior conversations
+  Note over LS: Receives shared LAB.md, role prompt, and only packet-listed source files, with no prior conversations
   LS-->>PD: artifact + run status
   PD->>PD: check artifact against handoff completion test
   PD-->>PI: artifact, completion assessment, blockers
@@ -93,7 +93,7 @@ sequenceDiagram
   PF-->>PD: research/pathways.md (3-5 paths, each with cheapest kill-test)
   PD->>PD: check artifact against completion test
   PD->>PR: explicit reviewer packet with pathway and evidence bundle
-  Note over PR: Independent review; packet sources only, not prior conversations
+  Note over PR: Independent review, using packet sources only and no prior conversations
   PR-->>PD: PURSUE/HOLD/REJECT, objections tagged EVIDENCE or SPECULATION
   PD->>PD: check review artifact and route novelty questions
   PD->>LS: explicit packet for novelty literature search
@@ -104,7 +104,7 @@ sequenceDiagram
   R->>G: picks one (only the user promotes it to the charter)
   G->>PI: user choice for charter decision
   PI->>PD: approved scope decision
-  PD->>DE: explicit packet; lab run --handoff packet.yaml
+  PD->>DE: explicit packet, then lab run --handoff packet.yaml
   DE-->>PD: artifact + run status
   PD->>PD: check artifact against completion test
 ```
