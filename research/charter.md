@@ -1,6 +1,6 @@
 # Research Charter
 
-> Fill this in with the Guide (`scripts/lab run guide "help me write the charter"`).
+> Fill this in with the Guide using an explicit handoff packet (see `docs/handoffs.md`).
 > The adversarial reviewer's verdict on the charter must be VERIFIED before work starts (see gates/phase-gates.md).
 
 ## Main question

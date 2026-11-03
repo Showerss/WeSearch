@@ -8,11 +8,13 @@ flowchart LR
   PI[PI] -->|charter, parking lot| F2[(research/charter.md, parking-lot.md)]
   ID[Ideator] --> F3[(research/ideas/)]
   PF[Pathfinder] --> F4[(research/pathways.md)]
-  PD[Postdoc] -->|plan + briefs via lab run| F5[(research/plan.md)]
+  PD[Postdoc] -->|plan + explicit handoff packets| F5[(research/plan.md, research/handoffs/)]
+  PD -->|checks artifact against completion test| PF
   LS[Literature Scout] --> F6[(research/literature/)]
   DE[Data/Experiment Eng.] --> F7[(research/runs/, src/)]
   TS[Theory Specialist] --> F8[(research/claims/ID/)]
   W[Writer] --> F9[(research/drafts/)]
+  PF & LS & DE & TS & W -->|artifact + status| PD
   F6 & F7 & F8 -->|claim packet only| REV[Independent reviewers]
   REV -->|verdict| F10[(research/logs/reviews/)]
   F10 --> IO[Integrity Officer: lab promote]
@@ -38,8 +40,13 @@ sequenceDiagram
   G->>AR: review charter
   AR-->>G: verdict (lab gate charter must pass)
   G->>S: restate charter, student approves
-  PD->>LS: lab run --out research/literature/topic.md
-  LS-->>PD: lit table, cite-check run
+  PI->>PD: decision memo + charter item
+  PD->>PD: create plan and explicit handoff packet
+  PD->>LS: lab run --handoff packet.yaml --out research/literature/topic.md
+  Note over LS: Receives shared LAB.md, role prompt, and only packet-listed source files; no prior conversations
+  LS-->>PD: artifact + run status
+  PD->>PD: check artifact against handoff completion test
+  PD-->>PI: artifact, completion assessment, blockers
   PD->>PD: fill lit-protocol + protocol, lab prereg (freeze)
   PD-->>G: research/plan.md + status
   G-->>S: next steps, checkpoint saved
@@ -78,14 +85,26 @@ sequenceDiagram
   participant NA as Novelty Analyst
   participant DE as Data/Experiment Eng.
   R->>G: "3 ways to build a Java program to test H1"
-  G->>PF: lab run pathfinder
-  PF-->>G: research/pathways.md (3-5 paths, each with cheapest kill-test)
-  G->>PR: charter summary + pathway + evidence bundle
-  PR-->>G: PURSUE/HOLD/REJECT, objections tagged EVIDENCE or SPECULATION
-  PR->>LS: NEEDS NOVELTY CHECK
-  LS->>NA: literature table
-  NA-->>G: novelty verdict
+  G->>PI: request scope decision
+  PI-->>G: charter item and decision memo
+  G->>PD: route approved task and decision memo
+  PD->>PF: explicit packet with charter, decisions, evidence, task, output, completion test
+  Note over PF: Receives only shared policy, role prompt, and named packet sources
+  PF-->>PD: research/pathways.md (3-5 paths, each with cheapest kill-test)
+  PD->>PD: check artifact against completion test
+  PD->>PR: explicit reviewer packet with pathway and evidence bundle
+  Note over PR: Independent review; packet sources only, not prior conversations
+  PR-->>PD: PURSUE/HOLD/REJECT, objections tagged EVIDENCE or SPECULATION
+  PD->>PD: check review artifact and route novelty questions
+  PD->>LS: explicit packet for novelty literature search
+  LS->>NA: evidence artifact for independent novelty assessment
+  NA-->>PD: novelty verdict artifact
+  PD-->>G: checked artifacts, verdicts, blockers
   G-->>R: 3 pathways + verdicts
   R->>G: picks one (only the user promotes it to the charter)
-  G->>DE: later: lab run, writes src/ and research/runs/
+  G->>PI: user choice for charter decision
+  PI->>PD: approved scope decision
+  PD->>DE: explicit packet; lab run --handoff packet.yaml
+  DE-->>PD: artifact + run status
+  PD->>PD: check artifact against completion test
 ```

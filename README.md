@@ -25,7 +25,7 @@ git config core.hooksPath githooks
 Edit `lab.yaml`: set a model per tier, and put the `reviewer` tier on a different vendor than the builders. Export the API keys it names.
 
 ## First steps
-1. Fill in `research/charter.md` with the Guide. `scripts/lab gate charter` must pass.
+1. Fill in `research/charter.md` with the Guide using an explicit handoff packet (see [Handoffs](docs/handoffs.md)). `scripts/lab gate charter` must pass.
 1b. Fill in `research/lit-protocol.md` and `research/protocol.md`, then freeze: `scripts/lab prereg` (`--amend "reason"` for later deviations, `--check` to verify).
 2. Add a claim: `scripts/lab claim add H1a "text" --kind empirical --charter H1`
 3. Attach evidence and assumptions: `scripts/lab claim evidence H1a research/runs/run-001`
@@ -35,9 +35,10 @@ Edit `lab.yaml`: set a model per tier, and put the `reviewer` tier on a differen
 
 ## Exploring new directions
 ```bash
-scripts/lab run pathfinder "propose pathways from the current state" --out research/pathways.md
-scripts/lab run pathway-reviewer "<charter summary + pathway + kill-test + evidence bundle: literature tables, claims ledger, runs>" --out research/logs/pathway-review.md
+scripts/lab run pathfinder --handoff research/handoffs/pathfinder.yaml --out research/pathways.md
+scripts/lab run pathway-reviewer --handoff research/handoffs/pathway-review.yaml --out research/logs/pathway-review.md
 ```
+Each handoff names the charter item, decision rationale, evidence, task, expected output, and completion test. Only its explicitly listed source files are sent to the recipient; prior agent conversations are never forwarded. See [Handoffs](docs/handoffs.md) for the packet format and audit behavior.
 The Pathfinder proposes 3–5 directions, each with the cheapest test that would kill it. The Pathway Reviewer (independent, reviewer model) returns `PURSUE / HOLD / REJECT` per pathway, and every objection must be tagged `EVIDENCE` (cited to the bundle) or `SPECULATION`. Novelty doubts become `NEEDS NOVELTY CHECK` tasks for the Literature Scout / Novelty Analyst — the reviewer cannot settle them from memory. Only you can promote one into the charter.
 
 ## What is enforced by code (not by a model's goodwill)

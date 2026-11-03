@@ -93,14 +93,87 @@ def role_prompt(role):
     return read("LAB.md") + "\n\n---\n\n" + read(p)
 
 
+def handoff_path(path):
+    resolved = os.path.realpath(path)
+    if os.path.commonpath((ROOT, resolved)) != ROOT:
+        die(f"handoff source must be inside the repository: {path}")
+    if not os.path.isfile(resolved):
+        die(f"handoff source is not a file: {path}")
+    return resolved
+
+
+def load_handoff(path, role, out):
+    try:
+        packet = yaml.safe_load(read(handoff_path(path)))
+    except yaml.YAMLError as e:
+        die(f"invalid handoff YAML: {e}")
+    if not isinstance(packet, dict):
+        die("handoff must be a YAML mapping")
+    required = ("recipient", "charter_item", "charter_source", "decisions", "evidence", "task",
+                "expected_output", "completion_test")
+    missing = [key for key in required if key not in packet]
+    if missing:
+        die("handoff missing required fields: " + ", ".join(missing))
+    if packet["recipient"] != role:
+        die(f"handoff recipient is '{packet['recipient']}', not '{role}'")
+    for key in ("charter_item", "charter_source", "task", "expected_output", "completion_test"):
+        if not isinstance(packet[key], str) or not packet[key].strip():
+            die(f"handoff field '{key}' must be a non-empty string")
+    if os.path.normpath(packet["expected_output"]) != os.path.normpath(out):
+        die("handoff expected_output must match the --out path")
+    if not isinstance(packet["decisions"], list) or not packet["decisions"]:
+        die("handoff 'decisions' must be a non-empty list")
+    if not isinstance(packet["evidence"], list):
+        die("handoff 'evidence' must be a list")
+    sources = [("charter source", packet["charter_source"])]
+    for i, decision in enumerate(packet["decisions"], 1):
+        if not isinstance(decision, dict) or any(
+                not isinstance(decision.get(k), str) or not decision[k].strip()
+                for k in ("decision", "reason", "source")):
+            die(f"decision {i} must include non-empty decision, reason, and source")
+        sources.append(("decision source", decision["source"]))
+    sources.extend(("evidence", p) for p in packet["evidence"])
+    context = []
+    for label, source in sources:
+        if not isinstance(source, str) or not source.strip():
+            die(f"{label} path must be a non-empty string")
+        resolved = handoff_path(source)
+        context.append((source, read(resolved)))
+    return packet, context
+
+
 def cmd_run(a):
+    packet, context = load_handoff(a.handoff, a.role, a.out)
+    sections = [
+        "Use only the explicit handoff below, this shared lab policy, and your role instructions. "
+        "No prior agent conversations or unlisted files are provided.",
+        f"Charter item: {packet['charter_item']}",
+        "Decisions and rationale:\n" + "\n".join(
+            f"- Decision: {d['decision']}\n  Reason: {d['reason']}\n  Source: {d['source']}"
+            for d in packet["decisions"]),
+        "Evidence sources:\n" + ("\n".join(f"- {p}" for p in packet["evidence"]) or "- None"),
+    ]
+    for source, contents in context:
+        sections.append(f"## Explicit source: {source}\n{contents}")
+    sections.extend((
+        f"Task:\n{packet['task']}",
+        f"Expected output: {packet['expected_output']}",
+        f"Completion test:\n{packet['completion_test']}",
+    ))
+    task = "\n\n".join(sections)
     # Trigger 0: the promised artifact must exist afterwards, or the run failed.
-    text, model = call_model(a.role, role_prompt(a.role), a.task)
+    text, model = call_model(a.role, role_prompt(a.role), task)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     with open(a.out, "w") as f:
         f.write(text)
     ok = os.path.exists(a.out) and os.path.getsize(a.out) > 0
-    audit("run", role=a.role, model=model, out=a.out, ok=ok)
+    audit("run", role=a.role, model=model, out=a.out, ok=ok, handoff=a.handoff,
+          charter_item=packet["charter_item"], decisions=packet["decisions"],
+          evidence=packet["evidence"], task=packet["task"],
+          expected_output=packet["expected_output"], completion_test=packet["completion_test"],
+          handoff_sha256=hashlib.sha256(read(handoff_path(a.handoff)).encode()).hexdigest(),
+          source_sha256={p: hashlib.sha256(contents.encode()).hexdigest()
+                         for p, contents in context})
     if not ok:
         die("FAILED: promised artifact missing or empty")
     print(f"wrote {a.out}")
@@ -543,8 +616,9 @@ def cmd_gate(a):
 def main():
     ap = argparse.ArgumentParser(prog="lab")
     s = ap.add_subparsers(dest="cmd", required=True)
-    x = s.add_parser("run", help="run a role; --out is the promised artifact")
-    x.add_argument("role"); x.add_argument("task"); x.add_argument("--out", required=True); x.set_defaults(f=cmd_run)
+    x = s.add_parser("run", help="run a role using an explicit handoff packet")
+    x.add_argument("role"); x.add_argument("--handoff", required=True)
+    x.add_argument("--out", required=True); x.set_defaults(f=cmd_run)
     x = s.add_parser("review", help="send a claim packet to an independent reviewer")
     x.add_argument("claim"); x.add_argument("role"); x.set_defaults(f=cmd_review)
     c = s.add_parser("claim"); cs = c.add_subparsers(dest="sub", required=True)
