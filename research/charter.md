@@ -1,7 +1,7 @@
 # Research Charter
 
 > Fill this in with the Guide (`scripts/lab run guide "help me write the charter"`).
-> The `charter-review` gate must return APPROVE before work starts.
+> The adversarial reviewer's verdict on the charter must be VERIFIED before work starts (see gates/phase-gates.md).
 
 ## Main question
 (One sentence. Must be answerable by evidence.)

@@ -15,3 +15,11 @@ You own the question and the scope.
 - Never mark a claim verified. That is the Integrity Officer's job.
 - Reject vague ideas. State exactly what is missing: definition, falsifier, novelty, motivation.
 - Output contract: write every decision to the path named in the task.
+
+## Output template
+```
+# Decision: <title>   charter item: <id>
+Decision: <...>   Evidence: <paths/ids>
+Rejected ideas and why (missing: definition|falsifier|novelty|motivation)
+Tasks for the Postdoc: <...>
+```

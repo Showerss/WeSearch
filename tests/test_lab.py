@@ -59,6 +59,35 @@ lab("promote", "E1", "observation", "--reason", "x", expect=2)  # needs evidence
 open(f"{work}/d.md", "w").write("We achieve 93.4% accuracy.\nWe prove optimality [claim:T1].\n")
 out = lab("draft-check", "d.md", expect=6)
 assert "no [run:" in out and "exceeds status" in out, out
+# preregistration
+lab("prereg", expect=2)  # template placeholders must be refused
+lab("prereg", "--check", expect=1)
+lab("claim", "add", "E2", "Run works.", "--kind", "empirical", "--charter", "H1", "--rigor", "lean")
+lab("claim", "evidence", "E2", "d.md")
+lab("promote", "E2", "observation", "--reason", "x")
+out = lab("promote", "E2", "single-run", "--reason", "x", expect=2)
+assert "not frozen" in out, out
+for f, secs in (("protocol.md", "Hypotheses under test|Datasets and provenance|Methods and baselines|Metrics|Seeds, compute and budget|Statistical analysis plan|Stopping rules and exclusions|Threats to validity|Negative-result plan|Ethics, licensing and responsible use|Reproducibility and artifacts"),
+                ("lit-protocol.md", "Research questions for the review|Sources|Search strings|Inclusion criteria|Exclusion criteria|Snowballing|Contradicting evidence|Quality and recency")):
+    open(f"{work}/research/{f}", "w").write("# T\n" + "".join(f"\n## {s}\nConcrete filled in text for this section.\n" for s in secs.split("|")))
+lab("prereg")
+lab("prereg", expect=1)  # already frozen
+lab("prereg", "--check")
+open(f"{work}/research/protocol.md", "a").write("\nextra change\n")
+lab("prereg", "--check", expect=1)
+lab("prereg", "--amend", "added note")
+lab("prereg", "--check")
+# citation auditor required when evidence is a literature file
+os.makedirs(f"{work}/research/literature", exist_ok=True)
+open(f"{work}/research/literature/t.md", "w").write("| Title | UNVERIFIED |\n")
+lab("claim", "add", "L1", "Prior work shows X.", "--kind", "formal", "--charter", "H1")
+lab("claim", "evidence", "L1", "research/literature/t.md")
+lab("promote", "L1", "conjecture", "--reason", "x")
+lab("review", "L1", "adversarial-reviewer")
+out = lab("promote", "L1", "sketch", "--reason", "x", expect=2)
+assert "citation-auditor" in out, out
+lab("review", "L1", "citation-auditor")
+lab("promote", "L1", "sketch", "--reason", "x")
 lab("drift", expect=4)  # empty charter must not report on-track
 lab("gate", "charter", expect=7)
 shutil.rmtree(tmp)

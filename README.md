@@ -8,7 +8,9 @@ A model-agnostic research lab: plain files, role prompts, and a small `lab` CLI 
 flowchart TD
   U[You] <--> G[Guide: plain words + diagrams]
   G --> PI[PI: charter, scope]
-  PI --> B[Builders: literature, experiments, theory, writing]
+  I[Ideator: ideas, unexplored paths] --> PI
+  PI --> PD[Postdoc: plan, assignments, artifact checks]
+  PD --> B[Builders: literature, experiments, theory, writing]
   B -->|claim packet only| C[Independent checkers on a different model]
   C -->|VERIFIED / GAP / UNSUPPORTED / REFUTED| IO[Integrity Officer via lab promote]
   IO --> L[(Claim ledger)]
@@ -24,6 +26,7 @@ Edit `lab.yaml`: set a model per tier, and put the `reviewer` tier on a differen
 
 ## First steps
 1. Fill in `research/charter.md` with the Guide. `scripts/lab gate charter` must pass.
+1b. Fill in `research/lit-protocol.md` and `research/protocol.md`, then freeze: `scripts/lab prereg` (`--amend "reason"` for later deviations, `--check` to verify).
 2. Add a claim: `scripts/lab claim add H1a "text" --kind empirical --charter H1`
 3. Attach evidence and assumptions: `scripts/lab claim evidence H1a research/runs/run-001`
 4. Review: `scripts/lab review H1a adversarial-reviewer`
@@ -43,11 +46,14 @@ The Pathfinder proposes 3–5 directions, each with the cheapest test that would
 - Evidence files must exist. Run folders need command, seed, env and log.
 - Reviewers see only a claim packet, never the author's reasoning.
 - `lab draft-check`: numbers need `[run:<id>]`, strong wording needs a `[claim:<id>]` whose status supports it, figures need `script:<path>`.
-- `lab cite-check`: DOIs and arXiv ids must resolve.
+- `lab cite-check`: DOIs and arXiv ids must resolve. Claims resting on `research/literature/` files also need a fresh `citation-auditor` VERIFIED (quote vs claim).
+- `lab prereg`: protocol hashed and timestamped before runs; empirical claims cannot reach `single-run` if it changed without `--amend`.
 - `lab drift`, `lab gate <phase>`, `lab impact <assumption>`, and an audit log at `research/logs/audit.jsonl`.
 
 ## What is NOT enforced (be honest with yourself)
 - `cite-check` proves a reference exists, not that it says what the draft claims.
+- `prereg` proves the protocol file is unchanged since freezing; it cannot prove no run happened before freezing. Commit the lock file so git history shows the order.
+- The `citation-auditor` sees only quotes in the packet; it cannot catch a fabricated quote. Check quotes against the paper yourself.
 - `drift` is a keyword heuristic. It cannot see meaning.
 - `machine-checked` only means a proof-check log and proof file exist; the proof auditor must run the tool, and you should look at the log.
 - Reviewers are models. Test them with `tests/reviewer-regression/` and rotate any that approve known flaws.

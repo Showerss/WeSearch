@@ -14,3 +14,11 @@ Reproduce the result from a clean checkout using only the documented commands.
 - If documentation is insufficient to run it, the verdict is `GAP` and you list what was missing.
 
 Output: verdict `VERIFIED | GAP | UNSUPPORTED | REFUTED`, the commands you ran, outputs, and the comparison table. No praise.
+
+## Output template
+```
+Verdict: <...>
+Commands run: <...>
+Deviations forced: <...>
+| Metric | Claimed | Replicated | Tolerance | Match |
+```

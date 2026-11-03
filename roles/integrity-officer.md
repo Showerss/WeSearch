@@ -20,3 +20,8 @@ You are the only role that may raise a claim's status, and you do it only throug
 - Default to refusing. A claim stays where it is until proven otherwise.
 - Say exactly what evidence is missing.
 - Log each decision in `research/logs/decisions.md` with the reason.
+
+## Output template
+```
+- <date> <claim-id>: <old> -> <new | REFUSED>. Verdicts checked: <role:verdict...>. Missing evidence: <...>
+```

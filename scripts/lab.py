@@ -214,6 +214,13 @@ def check_rung(claim, target, req, cfg_rigor):
         reviewers.append("adversarial-reviewer")
     if claim.get("novelty") and ti >= 2 and rigor != "solo" and req["novelty_reviewer"] not in reviewers:
         reviewers.append(req["novelty_reviewer"])
+    ev_all = claim.get("evidence", [])
+    cite_role = req.get("citation_reviewer")
+    if cite_role and ti >= 2 and rigor != "solo" and any(p.startswith("research/literature/") for p in ev_all) \
+            and cite_role not in reviewers:
+        reviewers.append(cite_role)
+    if need.get("prereg"):
+        problems += prereg_problems()
     _, h = build_packet(claim)
     reviews = latest_reviews(claim["id"])
     for role in reviewers:
@@ -415,6 +422,84 @@ def cmd_draft_check(a):
     print("draft-check passed (mechanical checks only)")
 
 
+# ---------- preregistration ----------
+
+PREREG = "research/prereg.lock.yaml"
+PREREG_FILES = ["research/protocol.md", "research/lit-protocol.md"]
+PROTOCOL_SECTIONS = ["Hypotheses under test", "Datasets and provenance", "Methods and baselines", "Metrics",
+                     "Seeds, compute and budget", "Statistical analysis plan", "Stopping rules and exclusions",
+                     "Threats to validity", "Negative-result plan", "Ethics, licensing and responsible use",
+                     "Reproducibility and artifacts"]
+LIT_SECTIONS = ["Research questions for the review", "Sources", "Search strings", "Inclusion criteria",
+                "Exclusion criteria", "Snowballing", "Contradicting evidence", "Quality and recency"]
+
+
+def sha(path):
+    return hashlib.sha256(read(path).encode()).hexdigest()
+
+
+def section_problems(path, sections):
+    if not os.path.exists(path):
+        return [f"{path} does not exist"]
+    t, out = read(path), []
+    for s in sections:
+        body = t.split(f"## {s}", 1)[1].split("\n## ", 1)[0] if f"## {s}" in t else None
+        if body is None:
+            out.append(f"{path}: missing section '{s}'")
+        elif len(re.sub(r"\(.*?\)|\s", "", body, flags=re.S)) < 20:
+            out.append(f"{path}: section '{s}' is empty or still a placeholder")
+    return out
+
+
+def git_head():
+    import subprocess
+    r = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else "no-git"
+
+
+def prereg_problems():
+    lock = load(PREREG)
+    if not lock:
+        return ["protocol not frozen: run `scripts/lab prereg`"]
+    return [f"{p} changed since freeze (amend with `lab prereg --amend`)" for p, h in lock["files"].items()
+            if not os.path.exists(p) or sha(p) != h]
+
+
+def cmd_prereg(a):
+    lock = load(PREREG)
+    if a.amend:
+        if not lock:
+            die("nothing to amend: not frozen yet")
+        changed = {p: (lock["files"][p], sha(p)) for p in lock["files"] if sha(p) != lock["files"][p]}
+        if not changed:
+            die("no file differs from the frozen version")
+        with open("research/amendments.md", "a") as f:
+            f.write(f"\n## {time.strftime('%Y-%m-%d %H:%M')} (commit {git_head()[:8]})\nReason: {a.amend}\n")
+            for p, (o, n) in changed.items():
+                f.write(f"- {p}: {o[:12]} -> {n[:12]}\n")
+        lock["files"].update({p: n for p, (o, n) in changed.items()})
+        lock.setdefault("amendments", []).append({"t": time.strftime("%Y-%m-%dT%H:%M:%S"), "reason": a.amend})
+        save(PREREG, lock)
+        audit("prereg_amend", reason=a.amend)
+        print("amended; reviewers must re-check claims that depend on the protocol")
+        return
+    if a.check:
+        probs = prereg_problems()
+        print("\n".join(probs) or "protocol frozen and unchanged")
+        sys.exit(1 if probs else 0)
+    if lock:
+        die("already frozen. Use --amend to record a deviation.")
+    probs = section_problems(PREREG_FILES[0], PROTOCOL_SECTIONS) + section_problems(PREREG_FILES[1], LIT_SECTIONS)
+    if probs:
+        print("REFUSED: protocol is incomplete")
+        print("\n".join("  - " + p for p in probs))
+        sys.exit(2)
+    save(PREREG, {"frozen_at": time.strftime("%Y-%m-%dT%H:%M:%S"), "git_commit": git_head(),
+                  "files": {p: sha(p) for p in PREREG_FILES}})
+    audit("prereg_freeze")
+    print(f"frozen {', '.join(PREREG_FILES)}. Commit {PREREG} so the timestamp is in git history.")
+
+
 # ---------- phase gates ----------
 
 def cmd_gate(a):
@@ -431,6 +516,12 @@ def cmd_gate(a):
             miss.append("charter has no KEYWORDS")
     if p in ("protocol", "data", "analysis", "draft", "submission") and not glob.glob("research/literature/*.md"):
         miss.append("no literature table in research/literature/")
+    if p in ("protocol", "data", "analysis", "draft", "submission"):
+        miss += section_problems(PREREG_FILES[1], LIT_SECTIONS)
+        if p != "protocol" or os.path.exists(PREREG):
+            miss += prereg_problems()
+        else:
+            miss += section_problems(PREREG_FILES[0], PROTOCOL_SECTIONS) + ["protocol not frozen: run `scripts/lab prereg`"]
     if p in ("analysis", "draft", "submission"):
         for c in claims_doc()["claims"]:
             _, h = build_packet(c)
@@ -469,6 +560,8 @@ def main():
     x = s.add_parser("cite-check"); x.add_argument("files", nargs="+"); x.set_defaults(f=cmd_cite_check)
     x = s.add_parser("drift"); x.set_defaults(f=cmd_drift)
     x = s.add_parser("draft-check"); x.add_argument("file"); x.set_defaults(f=cmd_draft_check)
+    x = s.add_parser("prereg", help="freeze (hash + timestamp) the protocol before any run")
+    x.add_argument("--amend", metavar="REASON"); x.add_argument("--check", action="store_true"); x.set_defaults(f=cmd_prereg)
     x = s.add_parser("gate"); x.add_argument("phase", choices=["charter", "protocol", "data", "analysis", "draft", "submission"]); x.set_defaults(f=cmd_gate)
     a = ap.parse_args()
     a.f(a)

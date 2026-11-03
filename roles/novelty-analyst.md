@@ -15,3 +15,11 @@ You receive a claim packet only. Judge whether the claim is new.
   - what is actually new, if anything
   - what would make the novelty claim false
 - No praise. No encouragement. Defects and open questions only.
+
+## Output template
+```
+Verdict: <...>
+Closest prior work: <ids>
+What is actually new: <...>
+Novelty would be false if: <...>
+```

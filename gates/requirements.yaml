@@ -33,9 +33,11 @@ empirical:
       needs_evidence: true
     single-run:
       needs_evidence: true
+      prereg: true
       run_files: ["command.txt", "seed*", "env*", "stdout.log"]
     multi-seed:
       needs_evidence: true
+      prereg: true
       run_files: ["command.txt", "seed*", "env*", "stdout.log"]
       reviewers: [stats-methods-reviewer]
     ablated:
@@ -48,3 +50,6 @@ empirical:
 # rigor: full -> lean, plus adversarial-reviewer on every rung from index 2 up
 # Claims with novelty: true also need novelty-analyst from index 2 up (not in solo).
 novelty_reviewer: novelty-analyst
+# Claims whose evidence includes a research/literature/ file also need this reviewer from index 2 up (not in solo).
+citation_reviewer: citation-auditor
+# prereg: true on a rung requires an unchanged frozen protocol (`lab prereg`).

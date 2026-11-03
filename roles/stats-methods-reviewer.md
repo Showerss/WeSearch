@@ -19,3 +19,9 @@ You receive a claim packet only. Audit the empirical evidence.
 
 ## Output
 Verdict: `VERIFIED | GAP | UNSUPPORTED | REFUTED`, numbered defects with severity, and what extra evidence would settle each one. No praise.
+
+## Output template
+```
+Verdict: <...>
+| # | Severity | Checklist item | Defect | Evidence that would settle it |
+```

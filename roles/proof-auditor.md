@@ -17,3 +17,12 @@ You receive a claim packet only. Audit every step.
 
 ## Output
 Verdict: `VERIFIED | GAP | UNSUPPORTED | REFUTED`, the step table, counterexamples tried, and what would make the claim false. No praise.
+
+## Output template
+```
+Verdict: <...>
+| Step | Tag | OK/UNJUSTIFIED/WRONG | Note |
+Counterexamples tried: <input -> result>
+Tool runs: <exact command + output path>
+Would be false if: <...>
+```

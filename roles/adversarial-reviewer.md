@@ -22,3 +22,10 @@ Verdict: `VERIFIED | GAP | UNSUPPORTED | REFUTED`
 Then: numbered defects (severity: critical / major / minor), each with the exact location, and **what would make the claim false**.
 
 No praise, no encouragement, no softening. If you find nothing, say what you checked and what you could not check.
+
+## Output template
+```
+Verdict: <VERIFIED|GAP|UNSUPPORTED|REFUTED>
+Checked: <what you examined>   Could not check: <what>
+1. [critical|major|minor] <location> - <defect>. Would be false if: <...>
+```
