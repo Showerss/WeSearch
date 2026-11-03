@@ -43,7 +43,7 @@ sequenceDiagram
   PI->>PD: decision memo + charter item
   PD->>PD: create plan and explicit handoff packet
   PD->>LS: lab run --handoff packet.yaml --out research/literature/topic.md
-  Note over LS: Receives shared LAB.md, role prompt, and only packet-listed source files; no prior conversations
+  Note over LS: Receives shared LAB.md, role prompt, and only packet-listed source files, with no prior conversations
   LS-->>PD: artifact + run status
   PD->>PD: check artifact against handoff completion test
   PD-->>PI: artifact, completion assessment, blockers
