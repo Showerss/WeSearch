@@ -5,11 +5,12 @@ import http.server, json, os, shutil, subprocess, sys, tempfile, threading
 
 SRC = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 VERDICT = {"v": "Verdict: VERIFIED"}
+REQUESTS = []
 
 
 class H(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
-        self.rfile.read(int(self.headers["Content-Length"]))
+        REQUESTS.append(json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
         body = json.dumps({"choices": [{"message": {"content": VERDICT["v"] + "\n1. nothing"}}]}).encode()
         self.send_response(200); self.send_header("Content-Type", "application/json"); self.end_headers(); self.wfile.write(body)
 
@@ -38,6 +39,43 @@ def lab(*args, expect=0):
 
 lab("claim", "add", "T1", "Sorting runs in O(n log n).", "--kind", "formal", "--charter", "H1")
 lab("promote", "T1", "derived", "--reason", "skip", expect=2)  # one rung at a time
+# Explicit handoff contains the only role-specific source files sent to the model.
+os.makedirs(f"{work}/research/handoffs", exist_ok=True)
+os.makedirs(f"{work}/research/decisions", exist_ok=True)
+open(f"{work}/research/decisions/h1.md", "w").write("PI decision: search prior work.")
+open(f"{work}/research/evidence.md", "w").write("Evidence: charter supports H1.")
+open(f"{work}/research/unlisted.md", "w").write("DO NOT SEND THIS")
+handoff = {
+    "recipient": "literature-scout",
+    "charter_item": "H1",
+    "charter_source": "research/charter.md",
+    "decisions": [{"decision": "Search prior work.", "reason": "Establish novelty.", "source": "research/decisions/h1.md"}],
+    "evidence": ["research/evidence.md"],
+    "task": "Find closely related research.",
+    "expected_output": "research/literature/h1.md",
+    "completion_test": "List sources and unresolved questions.",
+}
+handoff_path = f"{work}/research/handoffs/h1.yaml"
+open(handoff_path, "w").write(json.dumps(handoff))
+lab("run", "literature-scout", "--handoff", "research/handoffs/h1.yaml", "--out", "research/literature/h1.md")
+sent = REQUESTS[-1]["messages"][1]["content"]
+assert "PI decision: search prior work." in sent and "Evidence: charter supports H1." in sent, sent
+assert "DO NOT SEND THIS" not in sent and "prior agent conversations" in sent, sent
+audit_events = [json.loads(line) for line in open(f"{work}/research/logs/audit.jsonl")]
+run_event = next(e for e in reversed(audit_events) if e["event"] == "run")
+assert run_event["charter_item"] == "H1" and run_event["task"] == handoff["task"], run_event
+assert "research/decisions/h1.md" in run_event["source_sha256"], run_event
+handoff["recipient"] = "writer"
+open(handoff_path, "w").write(json.dumps(handoff))
+before = len(REQUESTS)
+lab("run", "literature-scout", "--handoff", "research/handoffs/h1.yaml", "--out", "research/literature/h1.md", expect=1)
+assert len(REQUESTS) == before, "invalid handoff reached model"
+handoff["recipient"] = "literature-scout"
+handoff["evidence"] = [os.path.join(tmp, "outside.md")]
+open(handoff_path, "w").write(json.dumps(handoff))
+open(os.path.join(tmp, "outside.md"), "w").write("outside repo")
+lab("run", "literature-scout", "--handoff", "research/handoffs/h1.yaml", "--out", "research/literature/h1.md", expect=1)
+assert len(REQUESTS) == before, "outside-repository source reached model"
 lab("promote", "T1", "conjecture", "--reason", "stated")
 lab("promote", "T1", "sketch", "--reason", "no review", expect=2)  # needs reviewer
 lab("review", "T1", "adversarial-reviewer")

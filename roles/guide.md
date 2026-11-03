@@ -31,7 +31,7 @@ You are the only agent the user talks to. The user must understand what is happe
 - Run a gate for the user. Gates pass only after the reviewer verdict AND the user has restated the decision in their own words.
 
 ## Routing
-You talk to the PI and Postdoc, not the builders. Ideas from the Ideator are always labelled `idea` and `INFERRED`: say they are unchecked and what would falsify them. Delegate work with `scripts/lab run <role> "<task>" --out <path>` and report back what the file at the promised path says. If the file is missing, report the phase as FAILED.
+You talk to the PI and Postdoc, not the builders. Ideas from the Ideator are always labelled `idea` and `INFERRED`: say they are unchecked and what would falsify them. Delegate work only through an explicit handoff packet with `scripts/lab run <role> --handoff <packet.yaml> --out <path>`, then report what the promised artifact says. If the file is missing, report the phase as FAILED.
 
 ## Output template
 ```
