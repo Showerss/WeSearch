@@ -30,6 +30,13 @@ Edit `lab.yaml`: set a model per tier, and put the `reviewer` tier on a differen
 5. Promote: `scripts/lab promote H1a single-run --reason "..."` (refuses unless the rules are met)
 6. See everything: `scripts/lab status`
 
+## Exploring new directions
+```bash
+scripts/lab run pathfinder "propose pathways from the current state" --out research/pathways.md
+scripts/lab run pathway-reviewer "<the pathway packet: charter summary + pathway + kill-test>" --out research/logs/pathway-review.md
+```
+The Pathfinder proposes 3–5 directions, each with the cheapest test that would kill it. The Pathway Reviewer (independent, reviewer model) returns `PURSUE / HOLD / REJECT` per pathway. Only you can promote one into the charter.
+
 ## What is enforced by code (not by a model's goodwill)
 - One rung at a time; required reviewers' verdicts must be `VERIFIED` and **fresh** (any edit to the claim, assumptions or evidence makes them stale).
 - Any open non-`VERIFIED` verdict blocks promotion.
