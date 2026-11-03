@@ -28,6 +28,8 @@ roles:
   theory-specialist: strong
   writer: standard
   adversarial-reviewer: reviewer
+  pathfinder: strong
+  pathway-reviewer: reviewer
   proof-auditor: reviewer
   stats-methods-reviewer: reviewer
   replicator: reviewer
