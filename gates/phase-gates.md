@@ -5,10 +5,11 @@ A phase passes only when every item is true AND the user has restated the decisi
 | Phase | Must be true |
 |---|---|
 | 1. charter | Main question, falsifiable hypotheses (each with a falsifier), success and stop criteria, out-of-scope list, keywords. Adversarial reviewer returned VERIFIED on the charter (is it falsifiable, specific, motivated, new?). |
-| 2. protocol | Literature table exists; every entry passed `cite-check` or is marked UNVERIFIED and excluded. Novelty analyst verdict recorded. Methods/baselines/datasets/metrics written before any run. Assumptions listed. |
+| 2. protocol | Literature table exists; every entry passed `cite-check` or is marked UNVERIFIED and excluded. Novelty analyst verdict recorded. `research/lit-protocol.md` and `research/protocol.md` complete and frozen with `lab prereg` before any run (methods, baselines, datasets, metrics, stats plan, threats to validity, ethics/licensing). Assumptions listed. |
 | 3. data | Dataset provenance and hashes recorded. Train/test separation documented. |
 | 4. analysis | Every claim in scope has status at or above its target rung. No open critical defect. Replication done for headline claims. |
-| 5. draft | `lab draft-check` passes: every number has a run ID, every claim tag is within its status, every citation verified, every figure has a script. |
+| 5. draft | Citation Auditor verdict VERIFIED on claims resting on literature. Limitations, threats to validity and negative results sections present. |
+| 5. draft (mechanical) | `lab draft-check` passes: every number has a run ID, every claim tag is within its status, every citation verified, every figure has a script. |
 | 6. submission | Integrity Officer sign-off logged. Final drift check is `on-track`. User confirms understanding of each headline claim and its weakest point. |
 
 ## Charter review prompt (for the adversarial reviewer)

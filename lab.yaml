@@ -21,9 +21,12 @@ tiers:
 roles:
   guide: standard
   pi: strong
+  postdoc: strong
+  ideator: strong
   integrity-officer: strong
   literature-scout: standard
   novelty-analyst: reviewer
+  citation-auditor: reviewer
   data-experiment-engineer: standard
   theory-specialist: strong
   writer: standard

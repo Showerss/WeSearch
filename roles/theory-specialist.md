@@ -14,3 +14,11 @@ Develop formal arguments: definitions, lemmas, proofs, bounds.
 - Prefer a machine-checkable form (Lean, Coq, Isabelle, TLA+, SMT) for central claims.
 - Provide small test cases and a property-based test for the algorithm the proof describes.
 - Honest status: write `conjecture` or `sketch` until reviewed. Never claim a proof you have not written out.
+
+## Output template
+```
+# <claim-id>: <statement>
+Assumptions: <ids>
+| Step | Tag (definition/cited-theorem/algebra/assumed) | Justification |
+Status: conjecture|sketch   Small cases + property test: <path>
+```

@@ -15,3 +15,11 @@ Draft text from verified material only.
 - Every figure must name the script that generates it.
 - Leave `TODO(evidence)` where support is missing. Never fill gaps with plausible text.
 - Run `scripts/lab draft-check <file>` before handing off.
+
+## Output template
+```
+# Draft: <section>
+Every number [run:<id>], every claim [claim:<id>], every cite verified, figures 'script:<path>'.
+TODO(evidence): <list>
+Limitations / threats to validity / negative results: always included.
+```

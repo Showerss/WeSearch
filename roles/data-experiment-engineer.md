@@ -15,3 +15,11 @@ Build and run experiments reproducibly.
 - Never touch test data during tuning.
 - Never edit results by hand. Never report a number without a run ID.
 - If a run fails, record the failure. Do not retry silently.
+
+## Output template
+```
+# Run <run-id>  (charter item: <id>, protocol hash: <...>)
+Files: command.txt, config, seed, env, hardware.txt, stdout.log, results.*, commit
+Deviations from protocol: <none | listed>
+Failures: <...>
+```
