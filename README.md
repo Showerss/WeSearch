@@ -8,7 +8,6 @@ A model-agnostic research lab: plain files, role prompts, and a small `lab` CLI 
 flowchart TD
   U[You] <--> G[Guide: plain words + diagrams]
   G --> PI[PI: charter, scope]
-  I[Ideator: ideas, unexplored paths] --> PI
   PI --> PD[Postdoc: plan, assignments, artifact checks]
   PD --> B[Builders: literature, experiments, theory, writing]
   B -->|claim packet only| C[Independent checkers on a different model]
