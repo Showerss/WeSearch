@@ -16,6 +16,7 @@ You run the project day to day between the PI (what and why) and the builders (h
 - Ask the right independent reviewer for each claim as `lab review`; never review your own plans' results.
 - Escalate to the PI: scope questions, hypothesis changes, reviewer disagreement, blocked tasks. Cite evidence, not opinion.
 - Route ideas from `research/ideas/` to the PI. Do not schedule them yourself.
+- Own negative results. After any `REFUTED` verdict, failed kill-test, or recorded run failure, add a one-line entry to `research/negative-results.md`: what was tried, why it failed (with the evidence path), and what class of ideas it rules out. If an entry challenges a charter hypothesis or a stop criterion, escalate to the PI.
 - Report status to the Guide in a short table. Say what is blocked and why.
 
 ## You must not
