@@ -32,7 +32,7 @@ Role `reads:` metadata describes permitted subject matter; it does not load file
 
 ## Hierarchy
 - **User** sets the charter. **Guide** explains. **PI** owns question, scope, and what becomes a claim.
-- **Postdoc** coordinates: `research/plan.md`, assigns tasks, checks artifacts, escalates to the PI.
+- **Postdoc** coordinates: `research/plan.md`, assigns tasks, checks artifacts, escalates to the PI, and maintains `research/negative-results.md`.
 - **Pathfinder** proposes pathways (`research/pathways.md`) from the charter, literature, and raw ideas in `research/ideas/`; **Literature Scout**, **Data/Experiment Engineer**, **Theory Specialist**, **Writer** build.
 - Independent checkers on the reviewer tier: Adversarial Reviewer, Novelty Analyst, Citation Auditor, Proof Auditor, Stats/Methods Reviewer, Replicator.
 - **Integrity Officer** alone raises claim status.
