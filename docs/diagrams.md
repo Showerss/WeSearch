@@ -6,8 +6,10 @@ flowchart LR
   U[User] --> G[Guide]
   G -->|checkpoint, glossary, diagrams| F1[(research/session-state, glossary.md, diagrams/)]
   PI[PI] -->|charter, parking lot| F2[(research/charter.md, parking-lot.md)]
-  ID[Ideator] --> F3[(research/ideas/)]
+  PI -->|raw ideas| F3[(research/ideas/)]
+  U -->|raw ideas| F3
   PF[Pathfinder] --> F4[(research/pathways.md)]
+  F3 -->|raw material| PF
   PD[Postdoc] -->|plan + explicit handoff packets| F5[(research/plan.md, research/handoffs/)]
   PD -->|checks artifact against completion test| PF
   LS[Literature Scout] --> F6[(research/literature/)]
@@ -28,14 +30,12 @@ sequenceDiagram
   actor S as Student
   participant G as Guide
   participant PI
-  participant ID as Ideator
   participant PD as Postdoc
   participant LS as Lit Scout
   participant AR as Adversarial Reviewer
   S->>G: "I want to research X"
   G->>PI: topic, in plain words
-  PI->>ID: generate ideas
-  ID-->>PI: research/ideas/*.md (each with a falsifier)
+  PI->>PI: sharpen topic into falsifiable hypotheses
   PI-->>G: charter draft -> research/charter.md
   G->>AR: review charter
   AR-->>G: verdict (lab gate charter must pass)

@@ -1,1 +1,1 @@
-Ideator output goes here (`research/ideas/<topic>.md`). Ideas are not claims. Only the PI promotes an idea via `lab claim add`.
+Raw ideas go here (`research/ideas/<topic>.md`), written by the user or the PI. Each idea needs a one-sentence statement and a falsifier. Ideas are not claims and not directions: the Pathfinder evaluates them as raw material for pathways, and only the PI promotes an idea via `lab claim add`.
