@@ -19,6 +19,7 @@ tiers:
 
 # role -> tier. Edit freely.
 roles:
+  lab-lead: strong
   guide: standard
   pi: strong
   postdoc: strong

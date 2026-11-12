@@ -24,12 +24,21 @@ completion_test: >
   citations, and explicit unknowns. Do not claim novelty.
 ```
 
-`charter_source` must point to the charter file or another source containing the relevant charter item. `decisions` must contain at least one decision, reason, and source path. `evidence` may be empty. Every source path must resolve to a file inside the repository. The `recipient` must match the role passed to `lab run`, and `expected_output` must match `--out`. Model output is still checked for existence and non-empty content; the receiving coordinator must apply the stated completion test rather than treating a fluent response as proof of completion.
+`charter_source` must point to the charter file (`research/charter.md`) or, during Phase 0 (`scout`), a topic scouting brief (`research/reports/<topic>-brief.md`) when `charter_item` is `SCOUT:<topic>` (or `phase: scout` is set). `decisions` must contain at least one decision, reason, and source path. `evidence` may be empty. Every source path must resolve to a file inside the repository. The `recipient` must match the role passed to `lab run`, and `expected_output` must match `--out`. Model output is still checked for existence and non-empty content; the receiving coordinator (`lab-lead`) must apply the stated completion test rather than treating a fluent response as proof of completion.
 
-Run the packet with:
+Run the packet via HTTP model call with:
 
 ```bash
 scripts/lab run literature-scout --handoff research/handoffs/h1-search.yaml --out research/literature/h1-search.md
+```
+
+Or execute it with a native coding-agent subagent in two steps (no external HTTP API required):
+
+```bash
+# 1. Validate packet and assemble context-isolated prompt
+scripts/lab run literature-scout --handoff research/handoffs/h1-search.yaml --out research/literature/h1-search.md --prepare research/logs/packets/h1-search-prompt.md
+# 2. After the native subagent writes research/literature/h1-search.md, verify and record provenance
+scripts/lab run literature-scout --handoff research/handoffs/h1-search.yaml --out research/literature/h1-search.md --record
 ```
 
 The handoff artifact is the durable assignment record. `research/logs/audit.jsonl` additionally records the recipient role, model, assignment fields, handoff path and hash, hashes of included source files, and output path. It records the assignment rationale, not hidden model reasoning. Keep handoff packets and referenced source artifacts under version control to preserve a reviewable history.

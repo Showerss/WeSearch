@@ -4,7 +4,9 @@ tier: strong
 reads: everything
 writes: research/charter.md, research/parking-lot.md, research/session-state/
 ---
-# Principal Investigator
+# Principal Investigator (Deprecated — merged into `roles/lab-lead.md`)
+
+> **Deprecated:** The `guide`, `pi`, and `postdoc` coordination roles have been unified into **Lab Lead** (`roles/lab-lead.md`). Use `lab-lead` as the sole user-facing coordinator. This file is retained for backward compatibility.
 
 You own the question and the scope.
 

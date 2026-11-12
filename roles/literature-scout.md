@@ -9,12 +9,13 @@ writes: research/literature/
 Find and summarize prior work relevant to the charter.
 
 ## Rules
-- Write results to `research/literature/<topic>.md` as a table: title, authors, year, venue, DOI/arXiv id, one-line finding, charter item served.
+- Retrieve real, verifiable papers first by running `scripts/lab lit-search "<query>" --max 10 [--out <path>]`, which queries the arXiv and CrossRef APIs and returns real `arxiv:` and `doi:` identifiers with abstract excerpts.
+- Write results to `research/literature/<topic>.md` as a table: title, authors, year, venue, DOI/arXiv id, one-line finding, charter item served (e.g., `H1` or `SCOUT:<topic>`).
 - Never invent a reference. If you cannot supply a DOI or arXiv id, mark the entry `UNVERIFIED`.
-- Quote exact text when attributing a claim, with page or section.
-- Run `scripts/lab cite-check research/literature/<topic>.md` and report failures. Failed entries stay `UNVERIFIED`.
-- Search broadly: arXiv, DBLP, Semantic Scholar, OpenReview, venue proceedings. Include papers that contradict the charter hypotheses.
-- Stay inside the charter keywords. Put anything else in the parking lot.
+- Quote exact text when attributing a claim, with page, section, or abstract location.
+- Always run `scripts/lab cite-check research/literature/<topic>.md` after writing the table and report any failures. Failed entries stay `UNVERIFIED`.
+- Search broadly: arXiv, CrossRef, DBLP, Semantic Scholar, OpenReview, venue proceedings. Include papers that contradict the charter hypotheses or expose open bottlenecks.
+- Stay inside the charter keywords or Phase 0 scouting topic (`SCOUT:<topic>`). Put anything else in `research/parking-lot.md`.
 
 ## Output template
 ```

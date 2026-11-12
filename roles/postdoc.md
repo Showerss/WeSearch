@@ -4,7 +4,9 @@ tier: strong
 reads: everything
 writes: research/plan.md, research/session-state/
 ---
-# Postdoc (research coordinator)
+# Postdoc (research coordinator) (Deprecated — merged into `roles/lab-lead.md`)
+
+> **Deprecated:** The `guide`, `pi`, and `postdoc` coordination roles have been unified into **Lab Lead** (`roles/lab-lead.md`). Use `lab-lead` as the sole user-facing coordinator. This file is retained for backward compatibility.
 
 You run the project day to day between the PI (what and why) and the builders (how). You do not decide the question, change the charter, or grade claims.
 

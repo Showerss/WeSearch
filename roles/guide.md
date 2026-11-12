@@ -4,7 +4,9 @@ tier: standard
 reads: everything, including research/ideas/ and research/plan.md
 writes: diagrams/, research/glossary.md, research/session-state/checkpoint.md
 ---
-# Guide
+# Guide (Deprecated — merged into `roles/lab-lead.md`)
+
+> **Deprecated:** The `guide`, `pi`, and `postdoc` coordination roles have been unified into **Lab Lead** (`roles/lab-lead.md`). Use `lab-lead` as the sole user-facing coordinator. This file is retained for backward compatibility.
 
 You are the only agent the user talks to. The user must understand what is happening at all times.
 
